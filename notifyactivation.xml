@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="user" method="upgrade">
+	<name>PLG_USER_NOTIFYACTIVATION_NAME</name>
+	<version>1.0.0</version>
+	<creationDate>July 2016</creationDate>
+	<author>Simon Champion</author>
+	<authorEmail>simon@simonchampion.net</authorEmail>
+	<authorUrl></authorUrl>
+	<copyright>(C) 2016 Simon Champion</copyright>
+	<license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
+	<description>PLG_USER_NOTIFYACTIVATION_DESCRIPTION</description>
+
+	<files>
+		<filename>index.html</filename>
+		<filename plugin="notifyactivation">notifyactivation.php</filename>
+	</files>
+
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.plg_user_notifyactivation.sys.ini</language>
+	</languages>
+
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="usercategory" type="category" extension="com_users" description="PLG_USER_NOTIFYACTIVATION_CATEGORY_DESC" label="PLG_USER_NOTIFYACTIVATION_CATEGORY_LABEL" />
+                <field type="text" name="admin_message" default="User was activated by %s via the admin panel."
+                    label="PLG_USER_NOTIFYACTIVATION_ADMIN_MESSAGE_LABEL" description="PLG_USER_NOTIFYACTIVATION_ADMIN_MESSAGE_DESC" />
+                <field type="text" name="self_message" default="User activated their own account via the link in the activation email."
+                    label="PLG_USER_NOTIFYACTIVATION_SELF_MESSAGE_LABEL" description="PLG_USER_NOTIFYACTIVATION_SELF_MESSAGE_DESC" />
+                <field type="text" name="instant_message" default="User was created directly in active state by %s via the admin panel."
+                    label="PLG_USER_NOTIFYACTIVATION_INSTANT_MESSAGE_LABEL" description="PLG_USER_NOTIFYACTIVATION_INSTANT_MESSAGE_DESC" />
+                <field type="text" name="subject" default="User activation"
+                    label="PLG_USER_NOTIFYACTIVATION_SUBJECT_LABEL" description="PLG_USER_NOTIFYACTIVATION_SUBJECT_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>
