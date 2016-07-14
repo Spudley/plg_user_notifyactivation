@@ -18,23 +18,32 @@ class plgUserNotifyActivation extends JPlugin
         $newActivationKeyField = isset($newUser['activation']) ? $newUser['activation'] : '';
 
         //the act of activating the account causes the activation key field to be cleared.
-        $isBeingActivated = $oldActivationKeyField && ! $newActivationKeyField;
+        $isBeingActivated = $oldActivationKeyField && !$newActivationKeyField;
 
         if($isBeingActivated) {
-            return $this->createActivationNote($newUser['id'], $isNew);
+            return $this->createActivationNote($newUser['id'], false);
         }
     }
 
-    protected function createActivationNote($userID, $isNew)
+    public function onUserAfterSave($newUser, $isNew, $success)
+    {
+        //for new users that are active immediately on creation, we have to log this after the user record is saved
+        //because otherwise we won't have the userID.
+        if($success && $isNew && !$newUser['activation']) {
+            return $this->createActivationNote($newUser['id'], true);
+        }
+    }
+
+    protected function createActivationNote($userID, $instantActive)
     {
         $db = JFactory::getDbo();
 
         $category = $this->params->get('usercategory', 0);
         $loggedInUser = JFactory::getUser();
 
-        $message = ($loggedInUser->id === $userID)
+        $message = ($loggedInUser->id === 0)
             ? $this->params->get('self_message', '')
-            : $this->getAdminMessage($isNew, $loggedInUser);
+            : $this->getAdminMessage($instantActive, $loggedInUser);
 
         $fields = (object)[
             'user_id'           => $userID,
@@ -52,11 +61,11 @@ class plgUserNotifyActivation extends JPlugin
         $result = $db->insertObject('#__user_notes', $fields);
     }
 
-    private function getAdminMessage($isNew, $adminUser)
+    private function getAdminMessage($instantActive, $adminUser)
     {
         $userLinkURL = "/administrator/index.php?option=com_users&view=user&layout=edit&id=".$adminUser->id;
         $userLink = "<a href='{$userLinkURL}' target='_blank'>{$adminUser->name}</a>";
-        $messageRef = $isNew ? 'instant_message' : 'admin_message';
+        $messageRef = $instantActive ? 'instant_message' : 'admin_message';
         return sprintf($this->params->get($messageRef, ''), $userLink);
     }
 }
