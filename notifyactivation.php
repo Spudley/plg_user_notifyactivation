@@ -2,7 +2,7 @@
 /**
  * @package   NotifyActivation
  * @type      Plugin (User)
- * @version   1.0.0
+ * @version   1.0.1
  * @author    Simon Champion
  * @copyright (C) 2016 Simon Champion
  * @license   GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html

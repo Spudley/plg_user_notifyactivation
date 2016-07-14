@@ -9,6 +9,8 @@ This can be useful for reference and for resolving disputes and queries about ac
 Version History
 ----------------
 * 1.0.0     2016-07-03: Initial release.
+* 1.0.1     2016-07-14: Bug fixes: Now works in all three scenarios.
+
 
 Installation
 ----------------
