@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.0" type="plugin" group="user" method="upgrade">
     <name>PLG_USER_NOTIFYACTIVATION_NAME</name>
-    <version>1.0.1</version>
-    <creationDate>July 2016</creationDate>
+    <version>2.0.0</version>
+    <creationDate>December 2016</creationDate>
     <author>Simon Champion</author>
     <authorEmail>simon@simonchampion.net</authorEmail>
     <authorUrl></authorUrl>
