@@ -12,16 +12,28 @@ defined('_JEXEC') or die;
 
 class plgUserNotifyActivation extends JPlugin
 {
+    const MODE_USER_INSTANT_ACTIVATION  = 'user_instant_activation';
+    const MODE_ADMIN_INSTANT_ACTIVATION = 'admin_instant_activation';
+    const MODE_USER_EMAIL_VERIFICATION  = 'user_email_verification';
+    const MODE_USER_EMAIL_ACTIVATION    = 'user_email_activation';
+    const MODE_ADMIN_EMAIL_ACTIVATION   = 'admin_email_activation';
+    const MODE_ADMIN_PANEL_ACTIVATION   = 'admin_panel_activation';
+
     public function onUserBeforeSave($oldUser, $isNew, $newUser)
     {
-        $oldActivationKeyField = isset($oldUser['activation']) ? $oldUser['activation'] : '';
-        $newActivationKeyField = isset($newUser['activation']) ? $newUser['activation'] : '';
+        $oldActivationKey = isset($oldUser['activation']) ? $oldUser['activation'] : '';
+        $newActivationKey = isset($newUser['activation']) ? $newUser['activation'] : '';
 
         //the act of activating the account causes the activation key field to be cleared.
-        $isBeingActivated = $oldActivationKeyField && !$newActivationKeyField;
+        $isBeingActivated = $oldActivationKey && !$newActivationKey;
+
+        //if activation key changed but is still set then user has verified, but admin needs to activate them.
+        $isBeingVerified = ($oldActivationKey && $newActivationKey) && ($oldActivationKey != $newActivationKey);
 
         if($isBeingActivated) {
-            return $this->createActivationNote($newUser['id'], false);
+            return $this->createActivationNote($newUser['id'], $this->getActivationMode());
+        } elseif($isBeingVerified) {
+            return $this->createActivationNote($newUser['id'], self::MODE_USER_EMAIL_VERIFICATION);
         }
     }
 
@@ -30,20 +42,35 @@ class plgUserNotifyActivation extends JPlugin
         //for new users that are active immediately on creation, we have to log this after the user record is saved
         //because otherwise we won't have the userID.
         if($success && $isNew && !$newUser['activation']) {
-            return $this->createActivationNote($newUser['id'], true);
+            $loggedInUser = JFactory::getUser();
+            $mode = ($loggedInUser->id > 0) ? self::MODE_ADMIN_INSTANT_ACTIVATION : self::MODE_USER_INSTANT_ACTIVATION;
+            return $this->createActivationNote($newUser['id'], $mode);
         }
     }
 
-    protected function createActivationNote($userID, $instantActive)
+    private function getActivationMode()
+    {
+        //distinguish between clicking on token in email and clicking activate button in admin.
+        $input = JFactory::getApplication()->input;
+        $usingToken = ($oldActivationKey && $input->get('token') === $oldActivationKey);
+
+        $loggedInUser = JFactory::getUser();
+
+        if ($loggedInUser->id > 0 && !$usingToken) {
+            return self::MODE_ADMIN_PANEL_ACTIVATION;
+        }
+
+        return ($loggedInUser->id > 0) ? self::MODE_ADMIN_EMAIL_ACTIVATION : self::MODE_USER_EMAIL_ACTIVATION;
+    }
+
+    protected function createActivationNote($userID, $activationMode)
     {
         $db = JFactory::getDbo();
 
         $category = $this->params->get('usercategory', 0);
         $loggedInUser = JFactory::getUser();
 
-        $message = ($loggedInUser->id === 0)
-            ? $this->params->get('self_message', '')
-            : $this->getAdminMessage($instantActive, $loggedInUser);
+        $message = $this->getAdminMessage($activationMode, $loggedInUser);
 
         $fields = (object)[
             'user_id'           => $userID,
@@ -51,9 +78,9 @@ class plgUserNotifyActivation extends JPlugin
             'subject'           => $this->params->get('subject', ''),
             'body'              => "<div>{$message}</div>",
             'state'             => 1,
-            'created_user_id'   => $loggedInUser->id,
+            'created_user_id'   => $loggedInUser->id ?: 1,
             'created_time'      => date('Y-m-d H:i:s'),
-            'modified_user_id'  => $loggedInUser->id,
+            'modified_user_id'  => $loggedInUser->id ?: 1,
             'modified_time'     => date('Y-m-d H:i:s'),
             'review_time'       => date('Y-m-d'),
         ];
@@ -61,11 +88,10 @@ class plgUserNotifyActivation extends JPlugin
         $result = $db->insertObject('#__user_notes', $fields);
     }
 
-    private function getAdminMessage($instantActive, $adminUser)
+    private function getAdminMessage($activationMode, $adminUser)
     {
         $userLinkURL = "/administrator/index.php?option=com_users&view=user&layout=edit&id=".$adminUser->id;
         $userLink = "<a href='{$userLinkURL}' target='_blank'>{$adminUser->name}</a>";
-        $messageRef = $instantActive ? 'instant_message' : 'admin_message';
-        return sprintf($this->params->get($messageRef, ''), $userLink);
+        return sprintf($this->params->get($activationMode, ''), $userLink);
     }
 }
