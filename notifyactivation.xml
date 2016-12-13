@@ -32,7 +32,7 @@
                     label="PLG_USER_NOTIFYACTIVATION_USER_VERIFY_LABEL" description="PLG_USER_NOTIFYACTIVATION_USER_VERIFY_DESC" />
                 <field type="text" name="user_email_activation" default="User activated their own account via the link in the activation email."
                     label="PLG_USER_NOTIFYACTIVATION_USER_ACTIVATE_LABEL" description="PLG_USER_NOTIFYACTIVATION_USER_ACTIVATE_DESC" />
-                <field type="text" name="admin_email_activation" default="User was activated by %s via the link in the activation email."
+                <field type="text" name="admin_email_activation" default="User was activated by one of the administrators via the link in the activation email."
                     label="PLG_USER_NOTIFYACTIVATION_ADMIN_VIA_EMAIL_LABEL" description="PLG_USER_NOTIFYACTIVATION_ADMIN_VIA_EMAIL_DESC" />
                 <field type="text" name="admin_panel_activation" default="User was activated by %s via the admin panel."
                     label="PLG_USER_NOTIFYACTIVATION_ADMIN_VIA_PANEL_LABEL" description="PLG_USER_NOTIFYACTIVATION_ADMIN_VIA_PANEL_DESC" />

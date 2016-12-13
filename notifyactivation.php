@@ -31,7 +31,7 @@ class plgUserNotifyActivation extends JPlugin
         $isBeingVerified = ($oldActivationKey && $newActivationKey) && ($oldActivationKey != $newActivationKey);
 
         if($isBeingActivated) {
-            return $this->createActivationNote($newUser['id'], $this->getActivationMode());
+            return $this->createActivationNote($newUser['id'], $this->getActivationMode($oldUser['params']));
         } elseif($isBeingVerified) {
             return $this->createActivationNote($newUser['id'], self::MODE_USER_EMAIL_VERIFICATION);
         }
@@ -48,19 +48,26 @@ class plgUserNotifyActivation extends JPlugin
         }
     }
 
-    private function getActivationMode()
+    private function getActivationMode($params)
     {
         //distinguish between clicking on token in email and clicking activate button in admin.
         $input = JFactory::getApplication()->input;
         $usingToken = ($oldActivationKey && $input->get('token') === $oldActivationKey);
 
-        $loggedInUser = JFactory::getUser();
+        $userParams = json_decode($params, true);
+        if (!isset($userParams['activate'])) {
+            $userParams['activate'] = 0;
+        }
+        
+        $componentParams = JComponentHelper::getParams('com_users');
+        $activationByAdmin = $componentParams->get('useractivation') == 2 && $userParams['activate'];
 
+        $loggedInUser = JFactory::getUser();
         if ($loggedInUser->id > 0 && !$usingToken) {
             return self::MODE_ADMIN_PANEL_ACTIVATION;
         }
 
-        return ($loggedInUser->id > 0) ? self::MODE_ADMIN_EMAIL_ACTIVATION : self::MODE_USER_EMAIL_ACTIVATION;
+        return $activationByAdmin ? self::MODE_ADMIN_EMAIL_ACTIVATION : self::MODE_USER_EMAIL_ACTIVATION;
     }
 
     protected function createActivationNote($userID, $activationMode)
