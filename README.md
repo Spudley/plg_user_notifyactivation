@@ -1,5 +1,13 @@
 Notify Activation
 -----------------
+
+A Joomla plugin to add notes to user accounts when the account is activated.
+
+If you like this extension, please review it at the Joomla Extensions Directory: https://extensions.joomla.org/extensions/extension/clients-a-communities/user-management/notify-activation
+
+Introduction
+------------
+
 This is a plugin for Joomla that triggers the system to create a user note when an account is activated.
 
 The generated user note will allow site administrators to see at a glance when and how a user account was activated.
@@ -8,17 +16,17 @@ This can be useful for reference and for resolving disputes and queries about ac
 
 There are numerous ways that an account can be activated, depending on the setting of the User component config setting "New User Account Activation".
 
-###Activation setting 0: "None"
+####Activation setting 0: "None"
 * Immediate activation: Site is configured to activate accounts as soon as they are registered.
 
-###Activation setting 1: "Self"
+####Activation setting 1: "Self"
 * Self activation: User clicks on the activation link provided in his welcome email after registration.
 
-###Activation setting 2: "Administrator"
+####Activation setting 2: "Administrator"
 * Self verification: User clicks on the verification link provided in his welcome email after registration. This does not activate the account, but triggers a further email to be sent to the site administrators.
 * Admin activation: One of the site administrators then clicks on the link in their email to activate the account.
 
-###Account activation via the admin panel.
+####Account activation via the admin panel.
 * Admin-created accounts: An account is created by a site administrator from within the admin panel. Accounts created this way are active immediately on creation.
 * Manual activation: An admin user clicks the tick icon in the 'Activated' column of the user list to activate an account manually.
 
