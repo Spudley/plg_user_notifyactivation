@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.0" type="plugin" group="user" method="upgrade">
     <name>PLG_USER_NOTIFYACTIVATION_NAME</name>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <creationDate>December 2016</creationDate>
     <author>Simon Champion</author>
     <authorEmail>simon@simonchampion.net</authorEmail>
@@ -39,6 +39,20 @@
 
                 <field type="text" name="subject" default="User activation"
                     label="PLG_USER_NOTIFYACTIVATION_SUBJECT_LABEL" description="PLG_USER_NOTIFYACTIVATION_SUBJECT_DESC" />
+            </fieldset>
+            <fieldset name="email" label="PLG_USER_NOTIFYACTIVATION_FIELDSET_EMAIL">
+                <field name="email_on_admin_instant_activation" type="radio" label="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_INSTANT_LABEL" description="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_INSTANT_DESC" class="btn-group btn-group-yesno" default="0">
+                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES</option>
+                    <option value="0">PLG_USER_NOTIFYACTIVATION_EMAIL_NO</option>
+                </field>
+                <field name="email_on_admin_email_activation" type="radio" label="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_ACTIVATE_LABEL" description="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_ACTIVATE_DESC" class="btn-group btn-group-yesno" default="0">
+                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES</option>
+                    <option value="0">PLG_USER_NOTIFYACTIVATION_EMAIL_NO</option>
+                </field>
+                <field name="email_on_admin_panel_activation" type="radio" label="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_VIA_PANEL_LABEL" description="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_VIA_PANEL_DESC" class="btn-group btn-group-yesno" default="0">
+                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES</option>
+                    <option value="0">PLG_USER_NOTIFYACTIVATION_EMAIL_NO</option>
+                </field>
             </fieldset>
         </fields>
     </config>

@@ -34,12 +34,15 @@ All six of these events are recorded by the plugin, giving different messages in
 
 Where the action is carried out by someone other than the account holder, the notes try to include information about who that person was. This applies to the actions done by admin users. In the case of the two actions done on the admin panel, the system can work this out by getting the user details for the logged in admin user. However in the case of the admin activation link, the admin user does not need to be logged in for it to work. All admin users are sent the same link, so for this event we cannot tell which admin user completed the activation; just that it was done by one of them. The other events done by admin users do require the admin user to be logged in, and thus the plugin can report who did them.
 
+In addition, as of version 2.1, the plugin can also send users an email notifying them of their account being created or activated by an administrator.
+
 
 Version History
 ----------------
 * 1.0.0     2016-07-03: Initial release.
 * 1.0.1     2016-07-14: Bug fixes: Now works in all three scenarios.
 * 2.0.0     2016-12-13: Made it work with the "Administrator" option for new account activation.
+* 2.1.0     2017-01-30: Added ability to send activation emails.
 
 
 Installation
@@ -57,15 +60,27 @@ The plugin has several parameters:
 
 * Subject Text - this is the text that will be used for the for the subject text on the user notes.
 
+There is also a second configuration tab, for emails. This tab has three toggle switches that allow you to set the plugin to send emails to the user when their account is activated by the administrator, either by the administator creating the account manually, activating the account via an email link, or directly in the admin panel.
+
+Note: You should only enable these switches if your system does not already send emails to notify the user of account activation in these three cases. Depending on your Joomla config and other plugins, you may not need all of these switches enabled.
+
+The email that is sent to users in response to these three events uses the same text as Joomla's built-in account activation notification. This text is taken from the standard language translation files provided with Joomla. If you wish to override it, the relevant translation IDs are:
+
+* COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_SUBJECT for the email subject line.
+* COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY for the email body text.
+
 
 Limitations
 ----------------
 The plugin is obviously only going to be useful if your Joomla site requires user accounts to be activated. If you set the site to not require account activation, the plugin will still function but will produce erroneous user notes.
 
+The feature to send an activation email to the user is only available for activation events that are triggered by the admin. In addition, some of these events may trigger an email to the user already, depending on your site config. It is also possible that future Joomla updates or other plugins may add similar functionality which could also result in emails being sent twice. It is up to the site administrator to ensure that your site is configured to only send one email for each event.
+
 
 Motivation
 ----------------
 This plugin was written from scratch after attempting to resolve a user query over account activation. The account had been activated but the user claimed not to have done so himself and none of the site admins had done it either. We were unable to answer the question. Having the functionality in this plugin would have helped to resolve this.
+
 
 To Do
 -----
@@ -78,6 +93,7 @@ Caveats
 
 * When upgrading, if the note text does not appear, or appears incorrectly, try going to the plugin config page and hitting 'Save'.
 * With regard to the note generated when an admin user clicks an email link to activate an account: The plugin cannot know which admin user does this, so it can't specify them in the note text as it does for other events done by an admin user.
+
 
 License
 ----------------

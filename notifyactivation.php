@@ -31,8 +31,11 @@ class plgUserNotifyActivation extends JPlugin
         $isBeingVerified = ($oldActivationKey && $newActivationKey) && ($oldActivationKey != $newActivationKey);
 
         if($isBeingActivated) {
-            return $this->createActivationNote($newUser['id'], $this->getActivationMode($oldUser['params']));
+            $activationMode = $this->getActivationMode($oldUser['params']);
+            $this->sendActivationEmail($newUser, $activationMode);
+            return $this->createActivationNote($newUser['id'], $activationMode);
         } elseif($isBeingVerified) {
+            $this->sendActivationEmail($newUser, self::MODE_USER_EMAIL_VERIFICATION);
             return $this->createActivationNote($newUser['id'], self::MODE_USER_EMAIL_VERIFICATION);
         }
     }
@@ -44,6 +47,7 @@ class plgUserNotifyActivation extends JPlugin
         if($success && $isNew && !$newUser['activation']) {
             $loggedInUser = JFactory::getUser();
             $mode = ($loggedInUser->id > 0) ? self::MODE_ADMIN_INSTANT_ACTIVATION : self::MODE_USER_INSTANT_ACTIVATION;
+            $this->sendActivationEmail($newUser, $mode);
             return $this->createActivationNote($newUser['id'], $mode);
         }
     }
@@ -100,5 +104,51 @@ class plgUserNotifyActivation extends JPlugin
         $userLinkURL = "/administrator/index.php?option=com_users&view=user&layout=edit&id=".$adminUser->id;
         $userLink = "<a href='{$userLinkURL}' target='_blank'>{$adminUser->name}</a>";
         return sprintf($this->params->get($activationMode, ''), $userLink);
+    }
+
+    protected function sendActivationEmail($newUser, $activationMode)
+    {
+        //we're sharing com_user's language file so we can send the same email text, so make sure it's loaded.
+        //(it should be loaded already as this plugin is called from a com_users event, but good to be certain)
+        $lang = JFactory::getLanguage();
+        $lang->load('com_users', JPATH_ROOT, null, true);
+
+        //note: the lang strings use for the emails are for admin activation. Only $activationMode types that are
+        //relevant for this email content will have activation email options in config. Other types will return 0.
+        $shouldSendEmail = (int)$this->params->get('email_on_'.$activationMode, 0);
+        if(!$shouldSendEmail) {
+            return;
+        }
+
+        $config = JFactory::getConfig();
+        $emailSubject = JText::sprintf('COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_SUBJECT',
+            $newUser['name'], $config->get('sitename')
+        );
+
+        $emailBody = JText::sprintf('COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
+            $newUser['name'], $config->get('sitename'), $newUser['username']
+        );
+
+        //make sure email content exists. Unlikely to fail, but we *really* don't want people getting blank emails.
+        if(!$emailContent) {
+            return;
+        }
+
+        $mailer = JFactory::getMailer();
+        $mailer->setSender([$config->get('mailfrom'), $config->get('fromname')]);
+        $mailer->addRecipient([$newUser['email']]);
+        $mailer->setSubject($emailSubject);
+        $mailer->setBody($emailContent);
+
+        $send = $mailer->Send();
+    }
+
+    protected function getEmailSender()
+    {
+        $config = JFactory::getConfig();
+        return [
+            $config->get( 'mailfrom' ),
+            $config->get( 'fromname' ) 
+        ];
     }
 }
