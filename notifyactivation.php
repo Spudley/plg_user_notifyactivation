@@ -19,6 +19,19 @@ class plgUserNotifyActivation extends JPlugin
     const MODE_ADMIN_EMAIL_ACTIVATION   = 'admin_email_activation';
     const MODE_ADMIN_PANEL_ACTIVATION   = 'admin_panel_activation';
 
+    const SEND_TO_NONE = 0;
+    const SEND_TO_USER = 1;
+    const SEND_TO_ADMIN = 2;
+    const SEND_TO_BOTH = 3;
+
+    /**
+    * Load the language file on instantiation.
+    *
+    * @var    boolean
+    * @since  3.1
+    */
+    protected $autoloadLanguage = true;
+
     public function onUserBeforeSave($oldUser, $isNew, $newUser)
     {
         $oldActivationKey = isset($oldUser['activation']) ? $oldUser['activation'] : '';
@@ -32,10 +45,10 @@ class plgUserNotifyActivation extends JPlugin
 
         if($isBeingActivated) {
             $activationMode = $this->getActivationMode($oldUser['params']);
-            $this->sendActivationEmail($newUser, $activationMode);
+            $this->sendActivationEmails($newUser, $activationMode);
             return $this->createActivationNote($newUser['id'], $activationMode);
         } elseif($isBeingVerified) {
-            $this->sendActivationEmail($newUser, self::MODE_USER_EMAIL_VERIFICATION);
+            $this->sendActivationEmails($newUser, self::MODE_USER_EMAIL_VERIFICATION);
             return $this->createActivationNote($newUser['id'], self::MODE_USER_EMAIL_VERIFICATION);
         }
     }
@@ -47,7 +60,7 @@ class plgUserNotifyActivation extends JPlugin
         if($success && $isNew && !$newUser['activation']) {
             $loggedInUser = JFactory::getUser();
             $mode = ($loggedInUser->id > 0) ? self::MODE_ADMIN_INSTANT_ACTIVATION : self::MODE_USER_INSTANT_ACTIVATION;
-            $this->sendActivationEmail($newUser, $mode);
+            $this->sendActivationEmails($newUser, $mode);
             return $this->createActivationNote($newUser['id'], $mode);
         }
     }
@@ -106,49 +119,90 @@ class plgUserNotifyActivation extends JPlugin
         return sprintf($this->params->get($activationMode, ''), $userLink);
     }
 
-    protected function sendActivationEmail($newUser, $activationMode)
+    protected function sendActivationEmails($newUser, $activationMode)
     {
-        //we're sharing com_user's language file so we can send the same email text, so make sure it's loaded.
-        //(it should be loaded already as this plugin is called from a com_users event, but good to be certain)
         $lang = JFactory::getLanguage();
-        $lang->load('com_users', JPATH_ROOT, null, true);
+        $lang->load('plg_notifyactivation', JPATH_ROOT, null, true);
 
-        //note: the lang strings use for the emails are for admin activation. Only $activationMode types that are
-        //relevant for this email content will have activation email options in config. Other types will return 0.
+        //Only $activationMode types that are relevant will have activation email options in config.
+        //Other types will always return 0 as the default.
         $shouldSendEmail = (int)$this->params->get('email_on_'.$activationMode, 0);
-        if(!$shouldSendEmail) {
-            return;
-        }
 
         $config = JFactory::getConfig();
-        $emailSubject = JText::sprintf('COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_SUBJECT',
-            $newUser['name'], $config->get('sitename')
+        if ($this->shouldSendToUser($shouldSendEmail)) {
+            $this->sendUserEmail($newUser, $activationMode, $config);
+        }
+        if ($this->shouldSendToAdmin($shouldSendEmail)) {
+            $this->sendAdminEmail($newUser, $activationMode, $config);
+        }
+    }
+
+    protected function sendUserEmail($newUser, $activationMode, $config)
+    {
+        $siteName = $config->get('sitename');
+        $emailSubject = JText::sprintf('PLG_USER_NOTIFYACTIVATION_EMAIL_ACTIVATION_NOTIFICATION_TO_USER_SUBJECT',
+            $newUser['name'], $siteName
         );
 
-        $emailBody = JText::sprintf('COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY',
-            $newUser['name'], $config->get('sitename'), $newUser['username']
+        $emailBody = JText::sprintf('PLG_USER_NOTIFYACTIVATION_EMAIL_ACTIVATION_NOTIFICATION_TO_USER_BODY',
+            $newUser['name'], $siteName, $newUser['username']
         );
 
         //make sure email content exists. Unlikely to fail, but we *really* don't want people getting blank emails.
-        if(!$emailContent) {
-            return;
+        if($emailBody) {
+            $this->sendEmail($config, [$newUser['email']], $emailSubject, $emailBody);
+        }
+    }
+
+    protected function sendAdminEmail($newUser, $activationMode, $config)
+    {
+        $siteName = $config->get('sitename');
+        $emailSubject = JText::sprintf('PLG_USER_NOTIFYACTIVATION_EMAIL_ACTIVATION_NOTIFICATION_TO_ADMIN_SUBJECT',
+            $newUser['name'], $siteName
+        );
+
+        $emailBody = JText::sprintf('PLG_USER_NOTIFYACTIVATION_EMAIL_ACTIVATION_NOTIFICATION_TO_ADMIN_BODY',
+            $siteName, $newUser['name'], $newUser['email'], $newUser['username']
+        );
+
+        //make sure email content exists. Unlikely to fail, but we *really* don't want people getting blank emails.
+        if($emailBody) {
+            $recipients = $this->loadSysAdminEmailAddresses();
+            $this->sendEmail($config, $recipients, $emailSubject, $emailBody);
         }
 
+    }
+
+    protected function sendEmail($config, $recipients, $subject, $body)
+    {
         $mailer = JFactory::getMailer();
         $mailer->setSender([$config->get('mailfrom'), $config->get('fromname')]);
-        $mailer->addRecipient([$newUser['email']]);
-        $mailer->setSubject($emailSubject);
-        $mailer->setBody($emailContent);
+        $mailer->addRecipient($recipients);
+        $mailer->setSubject($subject);
+        $mailer->setBody($body);
 
         $send = $mailer->Send();
     }
 
-    protected function getEmailSender()
+    protected function shouldSendToUser($flag)
     {
-        $config = JFactory::getConfig();
-        return [
-            $config->get( 'mailfrom' ),
-            $config->get( 'fromname' ) 
-        ];
+        return ($flag === (int)self::SEND_TO_USER || $flag === (int)self::SEND_TO_BOTH);
+    }
+
+    protected function shouldSendToAdmin($flag)
+    {
+        return ($flag === (int)self::SEND_TO_ADMIN || $flag === (int)self::SEND_TO_BOTH);
+    }
+
+    protected function loadSysAdminEmailAddresses()
+    {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(['email']))
+            ->from($db->quoteName('#__users'))
+            ->where($db->quoteName('block') . ' = 0')
+            ->where($db->quoteName('sendEmail') . ' = 1');
+        $db->setQuery($query);
+        return $db->loadColumn();
     }
 }

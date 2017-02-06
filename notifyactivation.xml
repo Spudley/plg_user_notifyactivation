@@ -17,6 +17,7 @@
 
     <languages>
         <language tag="en-GB">language/en-GB/en-GB.plg_user_notifyactivation.sys.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_user_notifyactivation.ini</language>
     </languages>
 
     <config>
@@ -42,16 +43,22 @@
             </fieldset>
             <fieldset name="email" label="PLG_USER_NOTIFYACTIVATION_FIELDSET_EMAIL">
                 <field name="email_on_admin_instant_activation" type="radio" label="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_INSTANT_LABEL" description="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_INSTANT_DESC" class="btn-group btn-group-yesno" default="0">
-                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES</option>
                     <option value="0">PLG_USER_NOTIFYACTIVATION_EMAIL_NO</option>
+                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_USER</option>
+                    <option value="2">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_ADMIN</option>
+                    <option value="3">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_BOTH</option>
                 </field>
                 <field name="email_on_admin_email_activation" type="radio" label="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_ACTIVATE_LABEL" description="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_ACTIVATE_DESC" class="btn-group btn-group-yesno" default="0">
-                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES</option>
                     <option value="0">PLG_USER_NOTIFYACTIVATION_EMAIL_NO</option>
+                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_USER</option>
+                    <option value="2">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_ADMIN</option>
+                    <option value="3">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_BOTH</option>
                 </field>
                 <field name="email_on_admin_panel_activation" type="radio" label="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_VIA_PANEL_LABEL" description="PLG_USER_NOTIFYACTIVATION_EMAIL_ON_ADMIN_VIA_PANEL_DESC" class="btn-group btn-group-yesno" default="0">
-                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES</option>
                     <option value="0">PLG_USER_NOTIFYACTIVATION_EMAIL_NO</option>
+                    <option value="1">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_USER</option>
+                    <option value="2">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_ADMIN</option>
+                    <option value="3">PLG_USER_NOTIFYACTIVATION_EMAIL_YES_BOTH</option>
                 </field>
             </fieldset>
         </fields>
