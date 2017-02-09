@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.0" type="plugin" group="user" method="upgrade">
     <name>PLG_USER_NOTIFYACTIVATION_NAME</name>
-    <version>2.1.0</version>
+    <version>2.3.0</version>
     <creationDate>December 2016</creationDate>
     <author>Simon Champion</author>
     <authorEmail>simon@simonchampion.net</authorEmail>
@@ -63,4 +63,7 @@
             </fieldset>
         </fields>
     </config>
+    <updateservers>
+        <server type="extension" priority="2" name="Notify Activation Updates">https://raw.githubusercontent.com/Spudley/plg_user_notifyactivation/master/update.xml</server>
+    </updateservers>
 </extension>
