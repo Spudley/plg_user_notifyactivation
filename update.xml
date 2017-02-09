@@ -8,9 +8,9 @@
         <folder>user</folder>
 		<version>2.3.0</version>
 		<client>0</client>
-		<infourl title="Notify Activation plugin">https://github.com/Spudley/plg_user_notifyactivation/releases/tag/2.2.0</infourl>
+		<infourl title="Notify Activation plugin">https://github.com/Spudley/plg_user_notifyactivation/releases/tag/2.3.0</infourl>
 		<downloads>
-			<downloadurl type="full" format="zip">https://github.com/Spudley/plg_user_notifyactivation/archive/2.2.0.zip</downloadurl>
+			<downloadurl type="full" format="zip">https://github.com/Spudley/plg_user_notifyactivation/archive/2.3.0.zip</downloadurl>
 		</downloads>
 		<targetplatform name="joomla" version="3.[56789]" />
         <php_minimum>5.4.0</php_minimum>
