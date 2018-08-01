@@ -18,6 +18,8 @@
     <languages>
         <language tag="en-GB">language/en-GB/en-GB.plg_user_notifyactivation.sys.ini</language>
         <language tag="en-GB">language/en-GB/en-GB.plg_user_notifyactivation.ini</language>
+        <language tag="ru-RU">language/ru-RU/ru-RU.plg_user_notifyactivation.sys.ini</language>
+        <language tag="ru-RU">language/ru-RU/ru-RU.plg_user_notifyactivation.ini</language>
     </languages>
 
     <config>
