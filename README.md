@@ -44,6 +44,7 @@ Version History
 * 2.0.0     2016-12-13: Made it work with the "Administrator" option for new account activation.
 * 2.1.0     2017-01-30: Added ability to send activation emails.
 * 2.2.0     2017-02-06: Activation emails can now go to either the end user or to admin users (or both).
+* 2.3.0     2020-07-04: French and Russian translations now included.
 
 
 Installation
@@ -66,6 +67,16 @@ There is also a second configuration tab, for emails. This tab has three toggle 
 Note: You should only enable these switches if your system does not already send emails to notify the user of account activation in these three cases. Depending on your Joomla config and other plugins, you may not need all of these switches enabled.
 
 The email that is sent to users in response to these three events uses the same text as Joomla's built-in account activation notification. This default text is copied from the standard language translation files provided with Joomla, but independant translations are provided by the plugin. If you wish to override it, the relevant translation IDs can be found in the en-GB.plg_user_notifyactivation.ini file provided with this plugin.
+
+
+Credits
+-------
+
+* The plugin was written by Simon Champion.
+* Russian translation provided by Github user https://github.com/birdkiwi
+* French translation provided by Mihàly Marti alias Sarki.
+
+Huge thanks to the contributors.
 
 
 Limitations
