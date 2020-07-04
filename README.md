@@ -44,7 +44,7 @@ Version History
 * 2.0.0     2016-12-13: Made it work with the "Administrator" option for new account activation.
 * 2.1.0     2017-01-30: Added ability to send activation emails.
 * 2.2.0     2017-02-06: Activation emails can now go to either the end user or to admin users (or both).
-* 2.3.0     2020-07-04: French and Russian translations now included.
+* 2.4.0     2020-07-04: French and Russian translations now included.
 
 
 Installation
